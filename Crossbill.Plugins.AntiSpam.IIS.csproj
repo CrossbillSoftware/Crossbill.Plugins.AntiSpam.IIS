@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+		<CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+		<CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
+		<CopyDocumentationFileToOutputDirectory>false</CopyDocumentationFileToOutputDirectory>
+		<CopyBuildOutputToPublishDirectory>false</CopyBuildOutputToPublishDirectory>
+		<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AssemblyTitle>Crossbill.Plugins.AntiSpam.IIS</AssemblyTitle>
+		<IsPackable>true</IsPackable><NuspecFile>Crossbill.Plugins.AntiSpam.IIS.nuspec</NuspecFile>
+		<NuspecProperties>version=$(PackageVersion)</NuspecProperties>
+		<Description>AntiSpam plugin for IIS</Description>
+		<Copyright>Copyright © Crossbill, 2026, All Rights Reserved</Copyright>
+		<Product>Crossbill Platform</Product>
+		<Company>Crossbill</Company>
+		<Authors>Pavel Korsukov</Authors>
+		<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">True</GeneratePackageOnBuild>
+	</PropertyGroup>
+	
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(Configuration)' == 'Release'">
+	<Exec Command="xcopy /E /Y /d /I &quot;d:\Projects\Crossbill.Common\config\licenses\*.txt&quot; &quot;$(ProjectDir)plugins\$(ProjectName)&quot;" />
+	<Exec Command="c:\Crossbill.LicenseNoticeAggregator.lnk /project &quot;$(ProjectPath)&quot; /output &quot;$(ProjectDir)plugins\$(ProjectName)\third-party-notices.txt&quot; /exclude &quot;c:\Crossbill.LicenseNoticeAggregator\Crossbill.Cone.Web&quot;" />
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Condition="'$(Configuration)' == 'Release'" Command="c:\Crossbill.Packager.lnk /mode zip /path &quot;$(ProjectDir).&quot; /dest &quot;$(ProjectDir)bin/Plugin.zip&quot;" />
+	</Target>
+  
+  <Target Name="CopyPackage" AfterTargets="Pack">
+      <Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="d:\Projects\CROSS\Packs\" />
+  </Target>
+
+</Project>
